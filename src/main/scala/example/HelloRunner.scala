@@ -8,22 +8,22 @@ object HelloRunner {
   )
 
   def start: Unit = {
-    println("<TEST 1 ***********************>")
+    println("<Global Execution Context ***********************>")
     runTests(scala.concurrent.ExecutionContext.Implicits.global)
     Thread.sleep(100)
-    println("</TEST 1 ***********************>")
-    println("<TEST 2 ***********************>")
+    println("</<Global Execution Context ***********************>>")
+    println("<Custom Execution Context ***********************>")
     runTests(customExecutionContext)
     Thread.sleep(100)
-    println("</TEST 2 ***********************>")
+    println("</Custom Execution Context ***********************>")
   }
 
   def runTests(implicit executionContext: ExecutionContext): Unit = {
-    test1
-    test2
+    testDifferentNestedStates
+    testALotOfThreadsWithUserIds
   }
 
-  private def test2(implicit executionContext: ExecutionContext): Unit = {
+  private def testALotOfThreadsWithUserIds(implicit executionContext: ExecutionContext): Unit = {
     (1 until 40).foreach { userId =>
       RequestContext.withUserId(Some(userId)) {
         printContext(s"ID: $userId |")
@@ -32,7 +32,7 @@ object HelloRunner {
   }
 
 
-  private def test1(implicit executionContext: ExecutionContext): Unit = {
+  private def testDifferentNestedStates(implicit executionContext: ExecutionContext): Unit = {
     printContext("<TopLevel>")
     RequestContext.withUserId(Some(1)) {
       printContext("<UserId>")
